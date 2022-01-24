@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "stylelint.vscode-stylelint",
+    "esbenp.prettier-vscode",
+    "mikestead.dotenv",
+    "csstools.postcss",
+    "blanu.vscode-styled-jsx",
+    "msjsdiag.debugger-for-chrome",
+    "bradlc.vscode-tailwindcss",
+    "styled-components.vscode-styled-components"
+  ]
+}

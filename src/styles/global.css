@@ -1,0 +1,75 @@
+/* Preflight */
+@tailwind base;
+
+/* Reset */
+@layer base {
+  h1 {
+    @apply text-6xl;
+  }
+  h2 {
+    @apply text-4xl;
+  }
+  h3 {
+    @apply text-2xl;
+  }
+	h4 {
+    @apply text-xl;
+  }
+	h4 {
+    @apply text-base;
+  }
+	h5 {
+    @apply text-sm;
+  }
+	h6 {
+    @apply text-xs;
+  }
+
+	h1,h2,h3,h4,h5,h6 {
+		@apply font-semibold;
+	}
+
+	b {
+		@apply font-extrabold;
+	}
+
+  a {
+    /* @apply text-blue-600 underline; */
+  }
+
+	p {
+		&.app-text-regular {
+			@apply text-xl font-medium;
+		}
+
+		&.app-text-meta {
+			@apply text-sm font-bold;
+		}
+
+		&.app-text-unimportant {
+			@apply text-sm font-bold text-gray-600;
+		}
+	}
+
+	.google-map * {
+		border-style: none;
+	}
+}
+
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+html {
+	@apply antialiased text-gray-900 ;
+	font-family: 'Heebo', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Navigation */
+ul {
+	a, button {
+		@apply text-gray-700 border-none hover:text-gray-900 mr-6;
+	}
+}
+
