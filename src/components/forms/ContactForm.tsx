@@ -111,6 +111,7 @@ const ContactForm = () => {
           name="name"
           placeholder="Name"
           autoComplete="name"
+          value={state.name}
           onChange={handleChange}
           required
         />
@@ -123,6 +124,7 @@ const ContactForm = () => {
           placeholder="Email"
           type="email"
           autoComplete="email"
+          value={state.email}
           onChange={handleChange}
         />
       </InputGroup>
@@ -134,6 +136,7 @@ const ContactForm = () => {
           placeholder="Phone"
           type="tel"
           autoComplete="tel"
+          value={state.phone}
           onChange={handleChange}
         />
       </InputGroup>
@@ -145,6 +148,7 @@ const ContactForm = () => {
           placeholder="Tell us what's up"
           rows={4}
           className="w-full"
+          value={state.message}
           onChange={handleChange}
         />
       </InputGroup>

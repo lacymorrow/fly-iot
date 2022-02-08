@@ -3,10 +3,12 @@ import { useEffect } from 'react';
 import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+import NextNProgress from 'nextjs-progressbar';
 
 import * as ga from '../lib/ga';
 
 import '../styles/global.css';
+import 'antd/dist/antd.css';
 
 const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
   const router = useRouter();
@@ -27,6 +29,11 @@ const App = ({ Component, pageProps: { session, ...pageProps } }: AppProps) => {
   }, [router.events]);
   return (
     <SessionProvider session={session}>
+      <NextNProgress
+        startPosition={0.2}
+        stopDelayMs={100}
+        showOnShallow={false}
+      />
       <Component {...pageProps} />
     </SessionProvider>
   );

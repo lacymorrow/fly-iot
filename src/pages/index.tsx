@@ -1,12 +1,13 @@
 /*
-  brand login/logout
-  video autoplay
-  meta
-	pagination
-	votes
-	sharing
-	flag
-	comments
+	Dashboard
+	Add device
+	Remove Device
+	Assign port to schedule
+	Edit Schedule
+	View Schedule
+	Clear Schedule
+	Setup Wizard
+	meta
 	loading states
 	type: any
 */
@@ -31,7 +32,7 @@ const Index = () => {
     if (!active) {
       setTimeout(() => {
         setActive(true);
-      }, 2500);
+      }, 2000);
     }
   }, []);
 
@@ -60,9 +61,9 @@ const Index = () => {
 
       <div className="text-center">
         <p className="font-bold text-3xl mb-12">
-          Shedding light on{' '}
+          IoT{' '}
           <span className="font-extrabold text-white bg-gray-900 p-1">
-            abuses of authority
+            Scheduler
           </span>
           .
         </p>

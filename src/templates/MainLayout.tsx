@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import AuthStatus from '../components/auth/Navigation';
-import { PageWrapper, Wrapper } from '../styles/main';
 import config from '../utils/config';
 
 type MainProps = {
@@ -15,7 +14,7 @@ type MainProps = {
 const Main = (props: MainProps) => {
   const { pathname } = useRouter();
   return (
-    <PageWrapper className="p-2">
+    <div className="p-2">
       {props.meta}
 
       <div className="max-w-screen-xl w-full mx-auto relative">
@@ -37,13 +36,13 @@ const Main = (props: MainProps) => {
           </div>
         </div>
 
-        <Wrapper className="py-6">{props.children}</Wrapper>
+        <div className="py-6">{props.children}</div>
 
         {/* <div className="border-t border-gray-300 text-center py-8 text-sm">
         © Copyright {new Date().getFullYear()} {config.title}
       </div> */}
       </div>
-    </PageWrapper>
+    </div>
   );
 };
 
