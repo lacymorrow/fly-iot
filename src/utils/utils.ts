@@ -17,4 +17,15 @@ export const prefersReducedMotion = () => {
   return !mediaQuery || mediaQuery.matches;
 };
 
+export const queryParamString = (param?: string | string[]): string => {
+  let result = param;
+  if (typeof param === 'object') {
+    [result] = param;
+  }
+  if (typeof result === 'string') {
+    return result;
+  }
+  return '';
+};
+
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

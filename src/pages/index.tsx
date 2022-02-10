@@ -10,6 +10,8 @@
 	meta
 	loading states
 	type: any
+
+	Distinction between devices, ports, events needs to be clear
 */
 
 import { useEffect, useState } from 'react';

@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
 import Meta from '../../../../components/Meta';
-import Days from '../../../../components/setup/Days';
+import Event from '../../../../components/setup/Event';
 import Info from '../../../../components/setup/Info';
 import Layout from '../../../../templates/MainLayout';
 import config from '../../../../utils/config';
@@ -31,7 +31,7 @@ const Setup = () => {
   const router = useRouter();
   const { deviceId }: { deviceId?: string } = router.query;
   const { data }: any = useSession();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(1);
 
   const stepComplete = async () => {
     // wait
@@ -65,8 +65,16 @@ const Setup = () => {
         />
       )}
 
-      {current === 1 && (
+      {/* {current === 1 && (
         <Days
+          deviceId={deviceId}
+          userId={data?.userId}
+          onComplete={stepComplete}
+        />
+      )} */}
+
+      {current === 1 && (
+        <Event
           deviceId={deviceId}
           userId={data?.userId}
           onComplete={stepComplete}

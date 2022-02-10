@@ -5,7 +5,7 @@ import { useForm } from 'antd/lib/form/Form';
 
 import notify from '../../utils/notify';
 
-const Settings = ({
+const Info = ({
   deviceId,
   userId,
   onComplete,
@@ -17,12 +17,12 @@ const Settings = ({
   const [form] = useForm();
   const [loading, setLoading] = useState(false);
 
-  const onSkipName = () => {
+  const onSkip = () => {
     form.setFieldsValue({ name: `Device ${deviceId}` });
     form.submit();
   };
 
-  const onFinishName = async (values: any) => {
+  const onFinish = async (values: any) => {
     const { name } = values;
     if (!name || !deviceId) {
       return;
@@ -65,7 +65,7 @@ const Settings = ({
     <Space>
       <Form
         form={form}
-        onFinish={onFinishName}
+        onFinish={onFinish}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         initialValues={{ remember: true }}
@@ -80,7 +80,7 @@ const Settings = ({
           <Input />
         </Form.Item>
         <Form.Item>
-          <Button htmlType="button" onClick={onSkipName}>
+          <Button htmlType="button" onClick={onSkip}>
             Skip
           </Button>
           <Button type="primary" htmlType="submit" loading={loading}>
@@ -92,4 +92,4 @@ const Settings = ({
   );
 };
 
-export default Settings;
+export default Info;

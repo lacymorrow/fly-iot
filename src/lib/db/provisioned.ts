@@ -46,7 +46,6 @@ export const addDevice = async (props: any) => {
     .db(process.env.MONGODB_DB)
     .collection('devices')
     .insertOne({
-      // createdByUser: '61e8717cd38d770f67357134',
       timeDate: String(new Date()),
       timeCreated: Date.now(),
       timeUpdated: Date.now(),

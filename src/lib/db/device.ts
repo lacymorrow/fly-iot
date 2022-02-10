@@ -12,7 +12,6 @@ export const addDevice = async (props: any) => {
     .db(process.env.MONGODB_DB)
     .collection('devices')
     .insertOne({
-      // createdByUser: '61e8717cd38d770f67357134',
       timeDate: String(new Date()),
       timeCreated: Date.now(),
       timeUpdated: Date.now(),
@@ -156,6 +155,30 @@ export const setDeviceName = async (options: {
     .db(process.env.MONGODB_DB)
     .collection('devices')
     .updateOne({ deviceId }, { $set: { deviceName: name } });
+
+  return result;
+};
+
+export const setDeviceStatusOn = async (options: { deviceId: string }) => {
+  const { deviceId } = options;
+
+  const client = await clientPromise;
+  const result = await client
+    .db(process.env.MONGODB_DB)
+    .collection('devices')
+    .updateOne({ deviceId }, { $set: { status: 'on' } });
+
+  return result;
+};
+
+export const setDeviceStatusOff = async (options: { deviceId: string }) => {
+  const { deviceId } = options;
+
+  const client = await clientPromise;
+  const result = await client
+    .db(process.env.MONGODB_DB)
+    .collection('devices')
+    .updateOne({ deviceId }, { $set: { status: 'off' } });
 
   return result;
 };
