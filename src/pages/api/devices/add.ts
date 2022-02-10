@@ -1,13 +1,18 @@
 // Validate that device is not duplicate, exists
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { addDevice } from '../../../lib/db/device';
-import { getProvisioned } from '../../../lib/db/provisioned';
+import { addDevice, getDeviceById } from '../../../lib/db/device';
+import {
+  getProvisioned,
+  registerProvisionedDevice,
+} from '../../../lib/db/provisioned';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { deviceId } = req.body;
+    const { deviceId, userId } = req.body;
+    const device = await getDeviceById(deviceId);
     const provisioned = await getProvisioned(deviceId);
+
     if (!provisioned) {
       return res.status(404).json({
         error: {
@@ -16,22 +21,49 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         },
       });
     }
-    if (provisioned?.registered) {
-      // Todo: If already registered to user, say so
 
-      return res.status(302).json({
+    if (provisioned?.registeredToUser === userId) {
+      if (provisioned?.registeredToUser === userId) {
+        return res.status(302).json({
+          data: {
+            code: 'found',
+            message: `This device is already registered to you. You can view it in your dashboard. Device ID: ${deviceId}`,
+          },
+        });
+      }
+      return res.status(400).json({
         error: {
-          code: 'found',
-          message: 'This device has already been registered.',
+          code: 'bad_request',
+          message: `This device has already been registered. Device ID: ${deviceId}`,
+        },
+      });
+    }
+
+    if (device) {
+      return res.status(500).json({
+        error: {
+          code: 'server_error',
+          message: `This device was registered but never assigned. Device ID: ${deviceId}`,
         },
       });
     }
 
     // Provisioned device exists and is not provisioned
-    const newDevice = await addDevice({ deviceId });
-    console.log('newdevice', newDevice);
-    if (newDevice) {
-      return res.status(200).json({ deviceId });
+    const registered = await registerProvisionedDevice({ deviceId, userId });
+    if (!registered.acknowledged) {
+      return res.status(500).json({
+        error: {
+          code: 'server_error',
+          message: `This device could not be registered. Device ID: ${deviceId}`,
+        },
+      });
+    }
+
+    const newDevice = await addDevice({ deviceId, registeredToUser: userId });
+    if (newDevice.acknowledged) {
+      return res
+        .status(200)
+        .json({ data: { message: `Device ID: ${deviceId}` }, deviceId });
     }
   }
 

@@ -42,7 +42,8 @@ export const getAllDevicesPaginated = async ({
 
   // Convert `new ObjectId('...')` to string '...'
   devices = devices.map((device: any) => {
-    return { ...device, _id: device._id.toString() };
+    const { _id, ...rest } = device;
+    return { _id: _id.toString(), ...rest };
   });
 
   return devices;
@@ -60,7 +61,8 @@ export const getFirstDevice = async () => {
     .findOne({}, { sort: { $natural: -1 } });
 
   // Convert `new ObjectId('...')` to string '...'
-  return { ...device, _id: device._id.toString() };
+  const { _id, ...rest } = device;
+  return { _id: _id.toString(), ...rest };
 };
 
 export const getDevice = async (deviceId: string | string[]) => {
@@ -87,8 +89,43 @@ export const getDevice = async (deviceId: string | string[]) => {
       .findOne({ _id: oId });
 
     // Convert `new ObjectId('...')` to string '...'
-    return { ...device, _id: device._id.toString() };
+    const { _id, ...rest } = device;
+    return { _id: _id.toString(), ...rest };
   } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getDeviceById = async (deviceId: string | string[]) => {
+  // Return a single document with a given deviceId
+  let id: string | undefined;
+  const client = await clientPromise;
+
+  try {
+    if (!deviceId) {
+      throw new Error('Invalid deviceId');
+    }
+
+    if (typeof deviceId === 'object') {
+      [id] = deviceId;
+    } else {
+      id = deviceId;
+    }
+
+    const result = await client
+      .db(process.env.MONGODB_DB)
+      .collection('devices')
+      .findOne({ deviceId: id });
+
+    if (!result) {
+      return false;
+    }
+
+    const { _id, ...rest } = result;
+    return { _id: _id.toString(), ...rest };
+  } catch (error) {
+    console.error(error);
     return null;
   }
 };
@@ -106,6 +143,21 @@ export const getRandomDeviceId = async () => {
   const ids = await getAllDeviceIds();
 
   return ids[generateRandom(ids.length)];
+};
+
+export const setDeviceName = async (options: {
+  deviceId: string;
+  name: string;
+}) => {
+  const { deviceId, name } = options;
+
+  const client = await clientPromise;
+  const result = await client
+    .db(process.env.MONGODB_DB)
+    .collection('devices')
+    .updateOne({ deviceId }, { $set: { deviceName: name } });
+
+  return result;
 };
 
 export const deleteDevice = async (deviceId: string | string[]) => {
@@ -133,35 +185,7 @@ export const deleteDevice = async (deviceId: string | string[]) => {
 
     return true;
   } catch (error) {
-    return false;
-  }
-};
-
-export const DeleteDevice = async (deviceId: string | string[]) => {
-  // Return a single document with a given deviceId
-  let id;
-  const client = await clientPromise;
-
-  try {
-    if (!deviceId) {
-      throw new Error('Invalid deviceId');
-    }
-
-    if (typeof deviceId === 'object') {
-      [id] = deviceId;
-    } else {
-      id = deviceId;
-    }
-
-    const oId = new ObjectId(id);
-
-    await client
-      .db(process.env.MONGODB_DB)
-      .collection('devices')
-      .remove({ _id: oId });
-
-    return true;
-  } catch (error) {
+    console.error(error);
     return false;
   }
 };
@@ -177,6 +201,7 @@ export const deleteAllDevices = async () => {
 
     return true;
   } catch (error) {
+    console.error(error);
     return false;
   }
 };

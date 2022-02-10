@@ -16,3 +16,5 @@ export const prefersReducedMotion = () => {
   const mediaQuery = window?.matchMedia('(prefers-reduced-motion: reduce)');
   return !mediaQuery || mediaQuery.matches;
 };
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

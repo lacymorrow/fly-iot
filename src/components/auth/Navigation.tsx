@@ -8,14 +8,14 @@ import { StyledNav } from '../../styles/components/navigation';
 
 const authPages = ['/account'];
 
-const AuthStatus = () => {
+const Navigation = () => {
   const { data: session } = useSession();
   const { pathname } = useRouter();
 
-  if (session) {
+  if (session?.user?.email) {
     const menu = (
       <Menu>
-        <Menu.Item>
+        <Menu.Item key="navigation:1">
           <Link href="/account">
             <a>
               {
@@ -27,22 +27,22 @@ const AuthStatus = () => {
             </a>
           </Link>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item key="navigation:2">
           <Link href="/u/dashboard">
             <a>Dashboard</a>
           </Link>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item key="navigation:3">
           <Link href="/u/devices">
             <a>View Devices</a>
           </Link>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item key="navigation:4">
           <Link href="/u/devices/add">
             <a>Add Device</a>
           </Link>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item key="navigation:5">
           <Link href="/api/auth/signout">
             <a
               onClick={async (event) => {
@@ -86,4 +86,4 @@ const AuthStatus = () => {
   );
 };
 
-export default AuthStatus;
+export default Navigation;

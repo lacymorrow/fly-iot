@@ -5,7 +5,7 @@ import { Button, Space } from 'antd';
 import Meta from '../components/Meta';
 import Layout from '../templates/MainLayout';
 import config from '../utils/config';
-import openNotification from '../utils/notification';
+import notify from '../utils/notify';
 
 interface StateType {
   deleteAll?: boolean;
@@ -29,13 +29,13 @@ const Admin = () => {
     const result = await (await fetch('/api/admin/devices/provision')).json();
 
     if (result.insertedId) {
-      openNotification({
+      notify({
         type: 'success',
         message: `Successfully provisioned device`,
         description: `Device ID: ${result.insertedId}`,
       });
     } else {
-      openNotification({
+      notify({
         type: 'error',
         message: `Error provisioning new device`,
       });
@@ -48,12 +48,12 @@ const Admin = () => {
     const result = await (await fetch('/api/admin/devices/delete/all')).json();
 
     if (result) {
-      openNotification({
+      notify({
         type: 'success',
         message: `Successfully deleted all devices`,
       });
     } else {
-      openNotification({
+      notify({
         type: 'error',
         message: `Error deleting all devices`,
       });

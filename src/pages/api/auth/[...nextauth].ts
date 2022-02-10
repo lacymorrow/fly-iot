@@ -35,16 +35,39 @@ export default NextAuth({
   ],
 
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      const isAllowedToSignIn = true;
+      console.log(user, account, profile, email, credentials);
+
+      if (isAllowedToSignIn) {
+        return true;
+      }
+      // Return false to display a default error message
+      return false;
+      // Or you can return a URL to redirect to:
+      // return '/unauthorized'
+    },
+    // redirect({ url, baseUrl }) {
+    //   if (url.startsWith(baseUrl)) return url;
+    //   // Allows relative callback URLs
+    //   if (url.startsWith('/')) return new URL(url, baseUrl).toString();
+    //   return baseUrl;
+    // },
     async jwt({ token, account }) {
       // Persist the OAuth access_token to the token right after signin
       if (account) {
-        return { accessToken: account.access_token, ...token };
+        return { ...token, accessToken: account.access_token };
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
-      return { token, ...session };
+      return {
+        token,
+        userId: user.id,
+        userData: { emailVerified: user.emailVerified },
+        ...session,
+      };
     },
   },
 });

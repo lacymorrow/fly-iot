@@ -1,70 +1,102 @@
+// Add a provisioned device to the devices list (activate to a user)
 import { useState } from 'react';
 
 import { Button, Input, Space } from 'antd';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import Meta from '../../../components/Meta';
 import Layout from '../../../templates/MainLayout';
 import config from '../../../utils/config';
-import openNotification from '../../../utils/notification';
+import notify from '../../../utils/notify';
+import { sleep } from '../../../utils/utils';
 
 const AddDevice = () => {
+  const router = useRouter();
+  const { data }: any = useSession();
   const [deviceId, setDeviceId] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const handleChange = (event: any) => {
     const { value } = event.target;
     setDeviceId(value);
   };
 
   const handleAddDevice = async () => {
-    setIsLoading(true);
+    if (!(deviceId && data.userId)) {
+      notify({
+        type: 'info',
+        message: `Please enter a device ID`,
+      });
+      return;
+    }
+
+    setLoading(true);
+
     const response = await fetch('/api/devices/add/', {
-      body: JSON.stringify({ deviceId }),
+      body: JSON.stringify({ deviceId, userId: data.userId }),
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
     });
 
-    console.log(response);
-    console.log(await response.json());
+    const result = await response.json();
+    setLoading(false);
 
-    if (!response) {
-      openNotification({
+    if (!response.status) {
+      notify({
         type: 'error',
         message: `Error adding device`,
         description: `Server did not respond.`,
       });
-    }
-
-    if (response.status === 404) {
-      openNotification({
-        type: 'error',
-        message: `Error adding device`,
-        description: `Device does not exist. Please contact Support for provisioning.`,
-      });
+      return;
     }
 
     if (response.status === 302) {
-      openNotification({
-        type: 'warning',
-        message: `Could not add device`,
-        description: `Device is already registered. Device ID: `,
+      notify({
+        type: 'info',
+        message: `Device already registered`,
+        description: result?.data?.message,
+        btn: (
+          <Button type="primary">
+            <Link href={`/u/devices/${deviceId}`}>
+              <a>View Device</a>
+            </Link>
+          </Button>
+        ),
       });
+      return;
     }
-
-    if (response.status === 200) {
-      openNotification({
-        type: 'success',
-        message: `Successfully added device`,
-        description: `Device ID: `,
-      });
-    } else {
-      openNotification({
+    if (
+      response.status === 400 ||
+      response.status === 404 ||
+      response.status === 500
+    ) {
+      notify({
         type: 'error',
         message: `Error adding device`,
+        description: result?.error?.message,
       });
+      return;
     }
-    setIsLoading(false);
+    if (response.status === 200) {
+      // Redirect on success
+      notify({
+        type: 'success',
+        message: `Added device`,
+        description: result?.data?.message,
+      });
+
+      await sleep(2000);
+      router.push(`/u/devices/${deviceId}`);
+      return;
+    }
+
+    notify({
+      type: 'error',
+      message: `Error adding device`,
+    });
   };
 
   return (
@@ -78,12 +110,13 @@ const AddDevice = () => {
     >
       <Space direction="vertical">
         <h1>Add Device</h1>
+        TODO: SCAN QR CODE
         <Input
           placeholder="Device ID..."
           value={deviceId}
           onChange={handleChange}
         />
-        <Button type="primary" loading={isLoading} onClick={handleAddDevice}>
+        <Button type="primary" loading={loading} onClick={handleAddDevice}>
           Add device
         </Button>
       </Space>

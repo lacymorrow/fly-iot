@@ -4,10 +4,14 @@ import { ObjectId } from 'mongodb';
 
 import clientPromise from '../mongodb';
 
-export const provisionDevice = async (props?: { deviceId?: string }) => {
+// TODO: deviceId
+export const provisionDevice = async (props?: {
+  deviceId?: string;
+  ports: number;
+}) => {
   const client = await clientPromise;
 
-  const device = await client
+  const result = await client
     .db(process.env.MONGODB_DB)
     .collection('provisioned')
     .insertOne({
@@ -16,13 +20,29 @@ export const provisionDevice = async (props?: { deviceId?: string }) => {
       ...props,
     });
 
-  return device;
+  return result;
+};
+
+export const registerProvisionedDevice = async (props: {
+  deviceId: string;
+  userId: string;
+}) => {
+  const { deviceId, userId } = props;
+  const oId = new ObjectId(deviceId);
+
+  const client = await clientPromise;
+  const result = await client
+    .db(process.env.MONGODB_DB)
+    .collection('provisioned')
+    .updateOne({ _id: oId }, { $set: { registeredToUser: userId } });
+
+  return result;
 };
 
 export const addDevice = async (props: any) => {
   const client = await clientPromise;
 
-  const device = await client
+  const result = await client
     .db(process.env.MONGODB_DB)
     .collection('devices')
     .insertOne({
@@ -33,7 +53,7 @@ export const addDevice = async (props: any) => {
       ...props,
     });
 
-  return device;
+  return result;
 };
 
 export const getAllProvisionedPaginated = async ({
@@ -91,6 +111,7 @@ export const getProvisioned = async (deviceId: string | string[]) => {
     // Convert `new ObjectId('...')` to string '...'
     return { ...device, _id: device._id.toString() };
   } catch (error) {
+    console.error(error);
     return null;
   }
 };
@@ -115,6 +136,7 @@ export const deleteAllProvisionedDevices = async () => {
 
     return true;
   } catch (error) {
+    console.error(error);
     return false;
   }
 };
