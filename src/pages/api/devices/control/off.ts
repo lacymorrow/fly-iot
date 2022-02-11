@@ -1,18 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { getDeviceById, setDeviceStatusOff } from '../../../../lib/db/device';
-import { queryParamString } from '../../../../utils/utils';
+import { currentTimeString, queryParamString } from '../../../../utils/utils';
 
 const handler = async (request: NextApiRequest, response: NextApiResponse) => {
-  const {
-    query: { deviceId, userId },
-  } = request;
+  if (request.method !== 'POST') {
+    // Invalid method
+    return response.status(400).json({
+      error: {
+        code: 'bad_request',
+        message:
+          "The requested endpoint was not found or doesn't support this method.",
+      },
+    });
+  }
+
+  const { deviceId, userId } = request.body;
 
   if (deviceId) {
     const device = await getDeviceById(deviceId);
 
     if (device.deviceId === deviceId && device.registeredToUser === userId) {
       // TODO: LOGIC TO TURN OFF DEVICE
+
+      console.log(
+        `[Control:off] Device ${deviceId} was turned off at ${currentTimeString()}`
+      );
 
       const result = await setDeviceStatusOff({
         deviceId: queryParamString(deviceId),

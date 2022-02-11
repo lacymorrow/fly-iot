@@ -1,27 +1,22 @@
 import { useState } from 'react';
 
-import { Button, DatePicker, Form, Space, Switch } from 'antd';
+import { Button, DatePicker, Form, Input, Space, Switch } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 
+import { DeviceSetupProps } from '../../lib/db/device.types';
 import notify from '../../utils/notify';
 
 const { RangePicker } = DatePicker;
 
-const Event = ({
-  deviceId,
-  userId,
-  onComplete,
-}: {
-  deviceId?: string;
-  userId: string;
-  onComplete: Function;
-}) => {
+const Event = ({ device, onComplete }: DeviceSetupProps) => {
+  const { deviceId, registeredToUser: userId } = device;
+
   const [form] = useForm();
-  const [isAlwaysOn, setIsAlwaysOn] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isAlwaysOn, setIsAlwaysOn] = useState(false);
   const [eventRange, setEventRange] = useState({
     start: undefined,
-    end: undefined,
+    stop: undefined,
   });
 
   const onSkip = () => {
@@ -31,22 +26,26 @@ const Event = ({
   const onValuesChange = (values: any) => {
     if (values.alwaysOn) {
       setIsAlwaysOn(values.alwaysOn);
+    } else {
+      setIsAlwaysOn(false);
     }
+
     if (values.eventRange) {
-      const [start, end] = values.eventRange;
-      setEventRange({ start: start.toDate(), end: end.toDate() });
+      const [start, stop] = values.eventRange;
+      setEventRange({ start: start?.toDate(), stop: stop?.toDate() });
     }
   };
 
   const onFinish = async (values: any) => {
     const {
       alwaysOn,
-      eventRange: [start, end],
+      eventName,
+      eventRange: [start, stop],
     } = values;
 
-    // Todo: should we require an end time?
-    if (!alwaysOn && (!start || !end)) {
-      // Not always on, start and end required
+    // Todo: should we require an stop time?
+    if (!alwaysOn && (!start || !stop)) {
+      // Not always on, start and stop required
       return;
     }
 
@@ -71,7 +70,11 @@ const Event = ({
         body: JSON.stringify({
           deviceId,
           userId,
-          event: { start: start.toDate(), end: end.toDate() },
+          event: {
+            name: eventName || 'Event',
+            start: start.toDate(),
+            stop: stop.toDate(),
+          },
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +114,6 @@ const Event = ({
         onFinish={onFinish}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }}
         name="event"
         autoComplete="off"
         labelWrap
@@ -120,6 +122,9 @@ const Event = ({
           <Switch checked={isAlwaysOn} />
         </Form.Item>
         {/* Todo: allow scheduling alwaysOn start at a future time */}
+        <Form.Item label="Event nickname" name="eventName">
+          <Input placeholder="My fun event" />
+        </Form.Item>
         <Form.Item
           name="eventRange"
           label="Start/Stop date and time"
@@ -132,8 +137,9 @@ const Event = ({
           ]}
         >
           <RangePicker
-            disabled={isAlwaysOn}
+            showNow
             showTime
+            disabled={isAlwaysOn}
             format="YYYY-MM-DD HH:mm:ss"
           />
         </Form.Item>
@@ -144,7 +150,7 @@ const Event = ({
             <span>
               {isAlwaysOn
                 ? 'indefinitely'
-                : `from ${eventRange?.start} to ${eventRange.end}`}
+                : `from ${eventRange?.start} to ${eventRange.stop}`}
             </span>
           </h3>
         )}

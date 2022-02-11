@@ -1,3 +1,6 @@
+export const currentTime = (): number => Date.now();
+export const currentTimeString = (): string => String(new Date());
+
 export const generateRandom = (max: number) => Math.floor(Math.random() * max);
 
 export const incrementNumber = (number: number, max: number) => {
@@ -19,8 +22,8 @@ export const prefersReducedMotion = () => {
 
 export const queryParamString = (param?: string | string[]): string => {
   let result = param;
-  if (typeof param === 'object') {
-    [result] = param;
+  if (Array.isArray(param)) {
+    result = param.join('');
   }
   if (typeof result === 'string') {
     return result;

@@ -12,7 +12,7 @@ const Navigation = () => {
   const { data: session } = useSession();
   const { pathname } = useRouter();
 
-  if (session?.user?.email) {
+  if (session?.userId) {
     const menu = (
       <Menu>
         <Menu.Item key="navigation:1">
@@ -33,13 +33,13 @@ const Navigation = () => {
           </Link>
         </Menu.Item>
         <Menu.Item key="navigation:3">
-          <Link href="/u/devices">
-            <a>View Devices</a>
+          <Link href="/u/schedule">
+            <a>Schedule</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="navigation:4">
-          <Link href="/u/devices/add">
-            <a>Add Device</a>
+          <Link href="/u/devices">
+            <a>My Devices</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="navigation:5">
@@ -51,11 +51,6 @@ const Navigation = () => {
                   redirect: authPages.includes(pathname),
                   callbackUrl: '/',
                 });
-
-                // If on a protected page, redirect
-                // if (authPages.includes(pathname)) {
-                //   push(data.url);
-                // }
               }}
             >
               Sign out

@@ -3,17 +3,11 @@ import { useState } from 'react';
 import { Button, Form, Input, Space } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 
+import { DeviceSetupProps } from '../../lib/db/device.types';
 import notify from '../../utils/notify';
 
-const Info = ({
-  deviceId,
-  userId,
-  onComplete,
-}: {
-  deviceId?: string;
-  userId: string;
-  onComplete: Function;
-}) => {
+const Info = ({ device, onComplete }: DeviceSetupProps) => {
+  const { deviceId, registeredToUser: userId } = device;
   const [form] = useForm();
   const [loading, setLoading] = useState(false);
 
@@ -68,9 +62,9 @@ const Info = ({
         onFinish={onFinish}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }}
         name="device"
         autoComplete="off"
+        initialValues={{ name: device?.deviceName || '' }}
       >
         <Form.Item
           label="Device Name"

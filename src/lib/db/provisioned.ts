@@ -2,31 +2,35 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { ObjectId } from 'mongodb';
 
+import { currentTime, currentTimeString } from '../../utils/utils';
 import clientPromise from '../mongodb';
+import { GetAllPaginatedProps } from './device.types';
+import {
+  ProvisionDeviceProps,
+  RegisterProvisionedDeviceProps,
+} from './provisioned.types';
 
 // TODO: deviceId
-export const provisionDevice = async (props?: {
-  deviceId?: string;
-  ports: number;
-}) => {
+export const provisionDevice = async (props?: ProvisionDeviceProps) => {
   const client = await clientPromise;
 
   const result = await client
     .db(process.env.MONGODB_DB)
     .collection('provisioned')
     .insertOne({
-      timeDate: String(new Date()),
-      timeCreated: Date.now(),
+      timeDate: currentTimeString(),
+      timeCreated: currentTime(),
+      timeUpdated: currentTime(),
+
       ...props,
     });
 
   return result;
 };
 
-export const registerProvisionedDevice = async (props: {
-  deviceId: string;
-  userId: string;
-}) => {
+export const registerProvisionedDevice = async (
+  props: RegisterProvisionedDeviceProps
+) => {
   const { deviceId, userId } = props;
   const oId = new ObjectId(deviceId);
 
@@ -34,23 +38,10 @@ export const registerProvisionedDevice = async (props: {
   const result = await client
     .db(process.env.MONGODB_DB)
     .collection('provisioned')
-    .updateOne({ _id: oId }, { $set: { registeredToUser: userId } });
-
-  return result;
-};
-
-export const addDevice = async (props: any) => {
-  const client = await clientPromise;
-
-  const result = await client
-    .db(process.env.MONGODB_DB)
-    .collection('devices')
-    .insertOne({
-      timeDate: String(new Date()),
-      timeCreated: Date.now(),
-      timeUpdated: Date.now(),
-      ...props,
-    });
+    .updateOne(
+      { _id: oId },
+      { $set: { registeredToUser: userId, timeUpdated: currentTime() } }
+    );
 
   return result;
 };
@@ -58,13 +49,10 @@ export const addDevice = async (props: any) => {
 export const getAllProvisionedPaginated = async ({
   limit,
   skip,
-}: {
-  limit: number;
-  skip: number;
-}) => {
+}: GetAllPaginatedProps) => {
   const client = await clientPromise;
 
-  let devices = await client
+  let results = await client
     .db(process.env.MONGODB_DB)
     .collection('devices')
     .find({})
@@ -74,19 +62,18 @@ export const getAllProvisionedPaginated = async ({
     .toArray();
 
   // Convert `new ObjectId('...')` to string '...'
-  devices = devices.map((device: any) => {
+  results = results.map((device: any) => {
     return { ...device, _id: device._id.toString() };
   });
 
-  return devices;
+  return results;
 };
 
 export const getAllProvisioned = () =>
   getAllProvisionedPaginated({ limit: 0, skip: 0 });
 
-export const getProvisioned = async (deviceId: string | string[]) => {
+export const getProvisioned = async (deviceId: string) => {
   // Return a single document with a given deviceId
-  let id;
   const client = await clientPromise;
 
   try {
@@ -94,21 +81,15 @@ export const getProvisioned = async (deviceId: string | string[]) => {
       throw new Error('Invalid deviceId');
     }
 
-    if (typeof deviceId === 'object') {
-      [id] = deviceId;
-    } else {
-      id = deviceId;
-    }
+    const oId = new ObjectId(deviceId);
 
-    const oId = new ObjectId(id);
-
-    const device = await client
+    const result = await client
       .db(process.env.MONGODB_DB)
       .collection('provisioned')
       .findOne({ _id: oId });
 
     // Convert `new ObjectId('...')` to string '...'
-    return { ...device, _id: device._id.toString() };
+    return { ...result, _id: result._id.toString() };
   } catch (error) {
     console.error(error);
     return null;

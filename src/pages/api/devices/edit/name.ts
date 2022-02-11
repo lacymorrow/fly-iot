@@ -3,9 +3,18 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getDeviceById, setDeviceName } from '../../../../lib/db/device';
 
 const handler = async (request: NextApiRequest, response: NextApiResponse) => {
-  const {
-    body: { deviceId, userId, name },
-  } = request;
+  if (request.method !== 'POST') {
+    // Invalid method
+    return response.status(400).json({
+      error: {
+        code: 'bad_request',
+        message:
+          "The requested endpoint was not found or doesn't support this method.",
+      },
+    });
+  }
+
+  const { deviceId, userId, name } = request.body;
 
   if (!deviceId || !userId || !name) {
     return response.status(400).json({

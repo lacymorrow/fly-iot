@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import moment from 'moment';
 import { Calendar, Event, momentLocalizer } from 'react-big-calendar';
@@ -8,30 +8,49 @@ import withDragAndDrop, {
 
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { ScheduleProps } from '../lib/db/event.types';
 
 const localizer = momentLocalizer(moment);
+// const ColoredDateCellWrapper = ({ children }) =>
+//   cloneElement(Children.only(children), {
+//     style: {
+//       backgroundColor: 'purple',
+//     },
+//   });
+
 // @ts-ignore
 const DnDCalendar = withDragAndDrop(Calendar);
 
-const Cal: FC = () => {
-  const [events, setEvents] = useState<Event[]>([
-    {
-      title: 'Learn cool stuff',
-      start: moment().toDate(),
-      end: moment().add(1, 'days').toDate(),
-    },
-  ]);
+const Cal = ({ deviceEvents }: ScheduleProps) => {
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    const initialEvents: Event[] = [];
+    deviceEvents.forEach((deviceEvent) => {
+      deviceEvent.events.map((event) =>
+        initialEvents.push({
+          allDay: false,
+          title: event.name || 'Event',
+          start: moment(event.start).toDate(),
+          end: moment(event.stop).toDate(),
+          resource: deviceEvent.device.deviceId,
+        })
+      );
+    });
+    setEvents(initialEvents);
+  }, [deviceEvents]);
 
   const onEventResize: withDragAndDropProps['onEventResize'] = (data) => {
-    const { start, end } = data;
-
-    setEvents((currentEvents) => {
-      const firstEvent = {
-        start: new Date(start),
-        end: new Date(end),
-      };
-      return [...currentEvents, firstEvent];
-    });
+    console.log(data);
+    // const { start, end } = data;
+    // setEvents((currentEvents) => {
+    //   const firstEvent = {
+    //     title: 'asd',
+    //     start: new Date(start),
+    //     end: new Date(end),
+    //   };
+    //   return [...currentEvents, firstEvent];
+    // });
   };
 
   const onEventDrop: withDragAndDropProps['onEventDrop'] = (data) => {
@@ -40,13 +59,17 @@ const Cal: FC = () => {
 
   return (
     <DnDCalendar
-      defaultView="week"
+      defaultView="month"
       events={events}
       localizer={localizer}
       onEventDrop={onEventDrop}
       onEventResize={onEventResize}
-      resizable
-      style={{ height: '75vh' }}
+      style={{ height: '65vh' }}
+      // components={{
+      //   timeSlotWrapper: ColoredDateCellWrapper,
+      // }}
+      // resizable
+      showMultiDayTimes
     />
   );
 };

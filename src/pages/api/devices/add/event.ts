@@ -4,9 +4,18 @@ import { getDeviceById } from '../../../../lib/db/device';
 import { addEvent } from '../../../../lib/db/event';
 
 const handler = async (request: NextApiRequest, response: NextApiResponse) => {
-  const {
-    body: { deviceId, userId, event },
-  } = request;
+  if (request.method !== 'POST') {
+    // Invalid method
+    return response.status(400).json({
+      error: {
+        code: 'bad_request',
+        message:
+          "The requested endpoint was not found or doesn't support this method.",
+      },
+    });
+  }
+  const { deviceId, userId, event } = request.body;
+  const { start, stop, name } = event;
 
   if (!deviceId || !userId || !event) {
     return response.status(400).json({
@@ -21,11 +30,13 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
   const device = await getDeviceById(deviceId);
 
   if (device.deviceId === deviceId && device.registeredToUser === userId) {
-    const result = await addEvent({ deviceId, event });
+    const result = await addEvent({ deviceId, start, stop, name });
     if (result.acknowledged) {
       return response.status(200).json({
         data: {
-          message: `This device will run from ${event.start} to ${event.end}`,
+          message: `This device will run from ${event.start}${
+            event.stop && ` to ${event.stop}`
+          }`,
         },
         deviceId,
       });
