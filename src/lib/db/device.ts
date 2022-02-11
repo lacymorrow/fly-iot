@@ -14,11 +14,13 @@ import {
   SetDeviceNameProps,
 } from './device.types';
 
+const { MONGO_DB } = process.env;
+
 export const addDevice = async (props: AddDeviceProps) => {
   const client = await clientPromise;
 
   const result = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('devices')
     .insertOne({
       timeDate: currentTimeString(),
@@ -38,7 +40,7 @@ export const getAllDevicesPaginated = async ({
   const client = await clientPromise;
 
   let results = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('devices')
     .find({})
     .sort({ $natural: -1 })
@@ -67,7 +69,7 @@ export const getAllDevicesByUserId = async (userId: string) => {
     }
 
     let results = await client
-      .db(process.env.MONGODB_DB)
+      .db(MONGO_DB)
       .collection('devices')
       .find({ registeredToUser: userId })
       .toArray();
@@ -99,7 +101,7 @@ export const getDevice = async (deviceId: string) => {
     const oId = new ObjectId(deviceId);
 
     const result = await client
-      .db(process.env.MONGODB_DB)
+      .db(MONGO_DB)
       .collection('devices')
       .findOne({ _id: oId });
 
@@ -115,7 +117,7 @@ export const getFirstDevice = async () => {
   const client = await clientPromise;
 
   const result = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('devices')
     .findOne({}, { sort: { $natural: -1 } });
 
@@ -134,7 +136,7 @@ export const getDeviceById = async (deviceId: string) => {
     }
 
     const result = await client
-      .db(process.env.MONGODB_DB)
+      .db(MONGO_DB)
       .collection('devices')
       .findOne({ deviceId });
 
@@ -169,7 +171,7 @@ export const setDeviceName = async (props: SetDeviceNameProps) => {
 
   const client = await clientPromise;
   const result = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('devices')
     .updateOne(
       { deviceId },
@@ -184,7 +186,7 @@ export const setDeviceStatusOn = async (props: { deviceId: string }) => {
 
   const client = await clientPromise;
   const result = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('devices')
     .updateOne(
       { deviceId },
@@ -199,7 +201,7 @@ export const setDeviceStatusOff = async (props: { deviceId: string }) => {
 
   const client = await clientPromise;
   const result = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('devices')
     .updateOne(
       { deviceId },
@@ -220,10 +222,7 @@ export const deleteDevice = async (deviceId: string) => {
 
     const oId = new ObjectId(deviceId);
 
-    await client
-      .db(process.env.MONGODB_DB)
-      .collection('devices')
-      .remove({ _id: oId });
+    await client.db(MONGO_DB).collection('devices').remove({ _id: oId });
 
     return true;
   } catch (error) {
@@ -236,10 +235,7 @@ export const deleteAllDevices = async () => {
   const client = await clientPromise;
 
   try {
-    await client
-      .db(process.env.MONGODB_DB)
-      .collection('devices')
-      .deleteMany({});
+    await client.db(MONGO_DB).collection('devices').deleteMany({});
 
     return true;
   } catch (error) {

@@ -1,4 +1,5 @@
 const config = {
+  domain: 'https://iot-lacymorrow.vercel.app/',
   totalImages: 21,
   site_name: 'Iot Cloud',
   email: 'me@lacymorrow.com',

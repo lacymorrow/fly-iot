@@ -10,12 +10,14 @@ import {
   RegisterProvisionedDeviceProps,
 } from './provisioned.types';
 
+const { MONGO_DB } = process.env;
+
 // TODO: deviceId
 export const provisionDevice = async (props?: ProvisionDeviceProps) => {
   const client = await clientPromise;
 
   const result = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('provisioned')
     .insertOne({
       timeDate: currentTimeString(),
@@ -36,7 +38,7 @@ export const registerProvisionedDevice = async (
 
   const client = await clientPromise;
   const result = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('provisioned')
     .updateOne(
       { _id: oId },
@@ -53,7 +55,7 @@ export const getAllProvisionedPaginated = async ({
   const client = await clientPromise;
 
   let results = await client
-    .db(process.env.MONGODB_DB)
+    .db(MONGO_DB)
     .collection('devices')
     .find({})
     .sort({ $natural: -1 })
@@ -84,7 +86,7 @@ export const getProvisioned = async (deviceId: string) => {
     const oId = new ObjectId(deviceId);
 
     const result = await client
-      .db(process.env.MONGODB_DB)
+      .db(MONGO_DB)
       .collection('provisioned')
       .findOne({ _id: oId });
 
@@ -109,10 +111,7 @@ export const deleteAllProvisionedDevices = async () => {
   const client = await clientPromise;
 
   try {
-    await client
-      .db(process.env.MONGODB_DB)
-      .collection('provisioned')
-      .deleteMany({});
+    await client.db(MONGO_DB).collection('provisioned').deleteMany({});
 
     return true;
   } catch (error) {
