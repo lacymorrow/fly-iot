@@ -93,6 +93,7 @@ const Admin = () => {
 };
 
 export function getServerSideProps() {
+  /* Don't serve route in production */
   return {
     notFound: process.env.NODE_ENV === 'production',
   };

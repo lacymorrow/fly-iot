@@ -26,9 +26,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
         `[Control:on] Device ${deviceId} was turned on at ${currentTimeString()}`
       );
 
-      const result = await setDeviceStatusOn({
-        deviceId,
-      });
+      const result = await setDeviceStatusOn(deviceId);
 
       if (result.acknowledged) {
         return response.status(200).json({

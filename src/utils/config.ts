@@ -1,9 +1,9 @@
 const config = {
   domain: 'https://iot-lacymorrow.vercel.app/',
   totalImages: 21,
-  site_name: 'Iot Cloud',
+  site_name: 'iot',
   email: 'me@lacymorrow.com',
-  title: 'Iot Cloud',
+  title: 'Cloud',
   tagline: 'Cloud interface for your IoT hub.',
   description: 'Schedule, control, and monitor your IoT Hub.',
   locale: 'en',

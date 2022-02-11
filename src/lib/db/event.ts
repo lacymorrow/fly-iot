@@ -6,7 +6,7 @@ import { currentTime } from '../../utils/utils';
 import clientPromise from '../mongodb';
 import { getAllDevicesByUserId } from './device';
 import { DeviceType } from './device.types';
-import { AddEventProps } from './event.types';
+import { AddEventProps, EventType } from './event.types';
 
 const { MONGO_DB } = process.env;
 
@@ -15,16 +15,22 @@ export const addEvent = async ({
   name,
   start,
   stop,
+  port,
 }: AddEventProps) => {
-  const client = await clientPromise;
-
-  const result = await client.db(MONGO_DB).collection('events').insertOne({
+  const event: EventType = {
     timeCreated: currentTime(),
     name,
     deviceId,
     start,
     stop,
-  });
+    port: port || 0,
+  };
+
+  const client = await clientPromise;
+  const result = await client
+    .db(MONGO_DB)
+    .collection('events')
+    .insertOne(event);
 
   return result;
 };

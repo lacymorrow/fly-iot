@@ -24,6 +24,10 @@ const Device = () => {
 
   const routes = [
     {
+      path: '/u/dashboard',
+      breadcrumbName: 'Dashboard',
+    },
+    {
       path: '/u/devices',
       breadcrumbName: 'Devices',
     },

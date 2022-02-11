@@ -1,12 +1,12 @@
 import { DeviceType } from './device.types';
 
 export interface EventType {
-  timeCreated: string;
+  timeCreated: number;
   deviceId: string;
   name: string;
   start: string;
   stop?: string;
-  port: string;
+  port: number;
 }
 
 export interface DeviceEventsType {
@@ -19,6 +19,7 @@ export interface AddEventProps {
   name: string;
   start: string;
   stop?: string;
+  port?: number;
 }
 
 export interface ScheduleProps {

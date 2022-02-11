@@ -1,7 +1,7 @@
 export interface DeviceType {
   timeDate: string;
-  timeCreated: string;
-  timeUpdated: string;
+  timeCreated: number;
+  timeUpdated: number;
   deviceId: string;
   deviceName: string;
   registeredToUser: string;

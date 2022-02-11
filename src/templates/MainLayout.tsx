@@ -1,9 +1,11 @@
 import { ReactNode } from 'react';
 
+import { Layout } from 'antd';
+import { Header, Content, Footer } from 'antd/lib/layout/layout';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import AuthStatus from '../components/auth/Navigation';
+import Navigation from '../components/auth/Navigation';
 import config from '../utils/config';
 
 type MainProps = {
@@ -14,35 +16,29 @@ type MainProps = {
 const Main = (props: MainProps) => {
   const { pathname } = useRouter();
   return (
-    <div className="p-2">
+    <Layout style={{ backgroundColor: 'transparent' }}>
       {props.meta}
-
-      <div className="max-w-screen-xl w-full mx-auto relative">
-        <div>
-          {pathname !== '/' && (
-            <div className="pb-6">
-              <div className="font-extrabold text-6xl text-gray-900">
-                <Link href="/">
-                  <a>{config.title}</a>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          <div className="absolute z-10 top-0 right-0 pt-6">
-            <div className="flex flex-wrap text-xl">
-              <AuthStatus />
-            </div>
+      <Header
+        style={{ backgroundColor: 'transparent' }}
+        className="flex justify-between mb-12"
+      >
+        {pathname !== '/' && (
+          <div className="font-extrabold text-6xl text-gray-900 inline">
+            <Link href="/">
+              <a>{config.title}</a>
+            </Link>
           </div>
-        </div>
-
-        <div className="py-6">{props.children}</div>
-
-        {/* <div className="border-t border-gray-300 text-center py-8 text-sm">
+        )}
+        <Navigation />
+      </Header>
+      <Content className="max-w-xl mx-auto">{props.children}</Content>
+      <Footer
+        style={{ backgroundColor: 'transparent' }}
+        className="border-t border-gray-300 text-center py-8 text-sm"
+      >
         © Copyright {new Date().getFullYear()} {config.title}
-      </div> */}
-      </div>
-    </div>
+      </Footer>
+    </Layout>
   );
 };
 

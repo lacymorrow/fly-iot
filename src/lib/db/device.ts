@@ -10,6 +10,7 @@ import {
 import clientPromise from '../mongodb';
 import {
   AddDeviceProps,
+  DeviceType,
   GetAllPaginatedProps,
   SetDeviceNameProps,
 } from './device.types';
@@ -19,16 +20,18 @@ const { MONGO_DB } = process.env;
 export const addDevice = async (props: AddDeviceProps) => {
   const client = await clientPromise;
 
+  const device: DeviceType = {
+    timeDate: currentTimeString(),
+    timeCreated: currentTime(),
+    timeUpdated: currentTime(),
+    deviceName: 'Device',
+    ...props,
+  };
+
   const result = await client
     .db(MONGO_DB)
     .collection('devices')
-    .insertOne({
-      timeDate: currentTimeString(),
-      timeCreated: currentTime(),
-      timeUpdated: currentTime(),
-      deviceName: 'Device',
-      ...props,
-    });
+    .insertOne(device);
 
   return result;
 };
@@ -181,9 +184,7 @@ export const setDeviceName = async (props: SetDeviceNameProps) => {
   return result;
 };
 
-export const setDeviceStatusOn = async (props: { deviceId: string }) => {
-  const { deviceId } = props;
-
+export const setDeviceStatusOn = async (deviceId: string) => {
   const client = await clientPromise;
   const result = await client
     .db(MONGO_DB)
@@ -196,9 +197,7 @@ export const setDeviceStatusOn = async (props: { deviceId: string }) => {
   return result;
 };
 
-export const setDeviceStatusOff = async (props: { deviceId: string }) => {
-  const { deviceId } = props;
-
+export const setDeviceStatusOff = async (deviceId: string) => {
   const client = await clientPromise;
   const result = await client
     .db(MONGO_DB)

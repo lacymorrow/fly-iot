@@ -27,9 +27,7 @@ const handler = async (request: NextApiRequest, response: NextApiResponse) => {
         `[Control:off] Device ${deviceId} was turned off at ${currentTimeString()}`
       );
 
-      const result = await setDeviceStatusOff({
-        deviceId: queryParamString(deviceId),
-      });
+      const result = await setDeviceStatusOff(queryParamString(deviceId));
 
       if (result.acknowledged) {
         return response.status(200).json({

@@ -1,7 +1,7 @@
 // Add a provisioned device to the devices list (activate to a user)
 import { useState } from 'react';
 
-import { Button, Input, Space } from 'antd';
+import { Button, Input } from 'antd';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -108,18 +108,16 @@ const AddDevice = () => {
         />
       }
     >
-      <Space direction="vertical">
-        <h1>Add Device</h1>
-        TODO: SCAN QR CODE
-        <Input
-          placeholder="Device ID..."
-          value={deviceId}
-          onChange={handleChange}
-        />
-        <Button type="primary" loading={loading} onClick={handleAddDevice}>
-          Add device
-        </Button>
-      </Space>
+      <h1>Add Device</h1>
+      TODO: SCAN QR CODE
+      <Input
+        placeholder="Device ID..."
+        value={deviceId}
+        onChange={handleChange}
+      />
+      <Button type="primary" loading={loading} onClick={handleAddDevice}>
+        Add device
+      </Button>
     </Layout>
   );
 };

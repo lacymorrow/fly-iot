@@ -1,5 +1,5 @@
-export interface EventType {
-  timeCreated: string;
+export interface ProvisionedType {
+  timeCreated: number;
   deviceId: string;
   start: string;
   stop?: string;
