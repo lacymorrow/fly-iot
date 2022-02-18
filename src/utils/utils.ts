@@ -1,5 +1,17 @@
+import QRCode from 'qrcode';
+
 export const currentTime = (): number => Date.now();
 export const currentTimeString = (): string => String(new Date());
+
+export const getQrCode = async (text: string) => {
+  try {
+    const qr = await QRCode.toDataURL(text);
+    return qr;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
 
 export const generateRandom = (max: number) => Math.floor(Math.random() * max);
 
