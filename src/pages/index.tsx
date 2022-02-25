@@ -1,6 +1,7 @@
 /*
 	Typing - Start with DB types (search for "any")
 	Device Ports
+	SWR : swr.vercel.com
 
 	Dashboard
 	Add device
