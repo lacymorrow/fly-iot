@@ -1,4 +1,4 @@
-// Validate that device is not duplicate, exists
+// TODO: Validate that device is not duplicate, exists
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { addDevice, getDeviceById } from '../../../lib/db/device';
@@ -10,9 +10,9 @@ import {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { deviceId, userId } = req.body;
-    const device = await getDeviceById(deviceId);
-    const provisioned = await getProvisioned(deviceId);
 
+    // is device provisioned?
+    const provisioned = await getProvisioned(deviceId);
     if (!provisioned) {
       return res.status(404).json({
         error: {
@@ -22,6 +22,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    const device = await getDeviceById(deviceId);
+    // is device registered to this user?
     if (provisioned?.registeredToUser === userId) {
       if (provisioned?.registeredToUser === userId) {
         return res.status(302).json({
@@ -31,6 +33,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           },
         });
       }
+      // is device registered to another user?
       return res.status(400).json({
         error: {
           code: 'bad_request',
@@ -39,6 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    // something went wrong, if a device is registered it should have a user attached
     if (device) {
       return res.status(500).json({
         error: {
@@ -59,6 +63,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    // Success!
     const newDevice = await addDevice({ deviceId, registeredToUser: userId });
     if (newDevice.acknowledged) {
       return res

@@ -106,11 +106,14 @@ const Setup = ({ device }: { device: DeviceType }) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params } = context;
   const session = await getSession(context);
+
+  // If user is allowed, get device data
   if (typeof session?.userId === 'string' && params?.deviceId) {
     const device = await getDeviceById(queryParamString(params.deviceId));
     return { props: { device, userId: session.userId } };
   }
 
+  // User not allowed (using next-auth)
   return {
     redirect: {
       destination: "/?error='auth",
